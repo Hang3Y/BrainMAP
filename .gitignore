@@ -1,0 +1,41 @@
+# Python cache and local editor state
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Runtime outputs
+workdir/
+outputs/
+logs/
+*.log
+*.tmp
+
+# Model checkpoints and exported weights
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+
+# Local datasets and packed WebDataset shards
+datasets/
+raw_data/
+webdata/
+webdata_debug/
+*.tar
+*.tar.gz
+
+# Medical-image files
+*.nii
+*.nii.gz
+*.mha
+*.mhd
+*.dcm
+*.npy
+*.npz
+*.h5
+*.hdf5

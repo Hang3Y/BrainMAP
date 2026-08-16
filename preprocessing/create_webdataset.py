@@ -292,22 +292,4 @@ def exit_code_from_summary(summary: Dict[str, Any]) -> int:
     return 1 if int(summary.get("failed_volume_count", 0)) > 0 else 0
 
 
-if __name__ == "__main__":
-    script_dir = Path(__file__).resolve().parent
-
-    DEBUG = False  # False for full dataset, True for quick debug run
-    DEBUG_MAX_SHARDS = 5
-
-    build_summary = create_webdataset(
-        base_dir=script_dir,
-        source_list=SOURCE_LIST,
-        output_dir=script_dir / ("webdata_debug" if DEBUG else "webdata"),
-        shard_size=10000,  # Each shard will contain up to 10,000 2D slices
-        slice_buffer_size=10000,  # Buffer up to 10,000 slices before shuffling and writing
-        random_seed=20260623,
-        debug=DEBUG,
-        debug_max_shards=DEBUG_MAX_SHARDS,
-    )
-    raise SystemExit(exit_code_from_summary(build_summary))
-
 

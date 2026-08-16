@@ -14,10 +14,6 @@ import numpy as np
 from brainmap.data.modality import ModalityMapper
 from brainmap.data.batch_contract import normalize_webdataset_sample
 
-"""
-读取已经打包好的 WebDataset tar shards，对样本进行解析、打乱和批量组合，最终生成模型训练使用的 DataLoader。
-每个 batch 包含图像、模态标签、元数据和样本标识。
-"""
 
 def build_webdataset_pipeline(
     shards: Sequence[str],
@@ -142,11 +138,11 @@ def collate_brainmap_batch(samples: List[Dict[str, object]]) -> Dict[str, object
     images = np.stack([sample["image"] for sample in samples], axis=0)
     modality_indices = [int(sample["modality_index"]) for sample in samples]
     return {
-        "image": torch.as_tensor(images, dtype=torch.float32),                  # 模型图像输入
-        "modality_index": torch.as_tensor(modality_indices, dtype=torch.long),  # 模态监督标签，torch.long
-        "modality": [str(sample["modality"]) for sample in samples],            # 原始模态名称
-        "metadata": [dict(sample["metadata"]) for sample in samples],           # 每个样本的元数据
-        "sample_key": [str(sample["sample_key"]) for sample in samples],        # 每个样本的标识
+        "image": torch.as_tensor(images, dtype=torch.float32),
+        "modality_index": torch.as_tensor(modality_indices, dtype=torch.long),
+        "modality": [str(sample["modality"]) for sample in samples],
+        "metadata": [dict(sample["metadata"]) for sample in samples],
+        "sample_key": [str(sample["sample_key"]) for sample in samples],
     }
 
 
@@ -169,29 +165,3 @@ def _add_bytes(tar: tarfile.TarFile, name: str, content: bytes) -> None:
     info = tarfile.TarInfo(name=name)
     info.size = len(content)
     tar.addfile(info, io.BytesIO(content))
-
-
-if __name__ == "__main__":
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        shard_path = Path(tmp_dir) / "dummy-000000.tar"
-        metadata = {
-            "dataset": "dummy",
-            "relative_path": "case_t1n.nii.gz",
-            "volume_stem": "case_t1n",
-            "modality": "t1n",
-            "z_index": 0,
-            "volume_shape": [224, 224, 160],
-            "dtype": "float16",
-        }
-        _write_dummy_shard(
-            shard_path=shard_path,
-            sample_key="dummy__case_t1n__z0000",
-            image=np.zeros((224, 224), dtype=np.float16),
-            modality="t1n",
-            metadata=metadata,
-        )
-        first_sample = list(build_webdataset_pipeline([str(shard_path)]))[0]
-        assert first_sample["image"].shape == (1, 224, 224)
-        assert first_sample["modality"] == "t1n"
-        assert first_sample["modality_index"] == 0
-        print("webdataset_loader sanity check passed")

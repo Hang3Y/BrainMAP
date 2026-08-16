@@ -5,11 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, List
 
-"""
-维护 MRI 模态名称与整数标签之间的固定双向映射，例如 t1n、t1c、t2w、t2f 分别映射为 0、1、2、3，
-为预训练中的模态分类监督提供标签。
-"""
-
 DEFAULT_MODALITIES = ("t1n", "t1c", "t2w", "t2f")
 
 
@@ -55,12 +50,3 @@ class ModalityMapper:
             raise IndexError(f"Modality index out of range: {index}")
         return self.modalities[index]
 
-
-if __name__ == "__main__":
-    mapper = ModalityMapper.default()
-    assert mapper.to_index("t1n") == 0
-    assert mapper.to_index("t1c") == 1
-    assert mapper.to_index("t2w") == 2
-    assert mapper.to_index("t2f") == 3
-    assert mapper.to_name(2) == "t2w"
-    print("modality sanity check passed")

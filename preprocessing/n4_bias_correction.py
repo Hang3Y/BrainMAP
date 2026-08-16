@@ -1,5 +1,3 @@
-"""Apply N4 bias field correction to one explicitly configured MRI directory."""
-
 from __future__ import annotations
 
 import json
@@ -237,36 +235,3 @@ def run_n4_bias_correction(
     return summary
 
 
-if __name__ == "__main__":
-    script_dir = Path(__file__).resolve().parent
-    dataset_inputs = {
-        "1001_abideii": "1001_abideii/abide_fm_ready_skull_stripping",
-        "1005_atlasr2": "1005_atlasr2/atlas_fm_ready_skull_stripping",
-        "1007_isles2022": "1007_isles2022/isles_fm_ready",
-        "1014_ixi": "1014_ixi/ixi_fm_ready_skull_stripping",
-        "1020_wmh": "1020_wmh/wmh_fm_ready_skull_stripping",
-        "1024_remind": "1024_remind/remind_fm_ready",
-        "1030_nigerian_clinical_mri": "1030_nigerian_clinical_mri/curated_fm_ready_skull_stripping",
-    }
-
-    # active_dataset = "1001_abideii"  # TODO 5
-    active_dataset = "1005_atlasr2"  # TODO 1
-    # active_dataset = "1007_isles2022"  # TODO 2
-    # active_dataset = "1014_ixi"  # TODO 6
-    # active_dataset = "1020_wmh"  # TODO 3
-    # active_dataset = "1024_remind"  # TODO 4
-    # active_dataset = "1030_nigerian_clinical_mri"
-
-    selected_input_dir = script_dir / dataset_inputs[active_dataset]
-
-    processing_summary = run_n4_bias_correction(
-        input_dir=selected_input_dir,
-        num_workers=4,
-        ants_threads_per_worker=6,
-        shrink_factor=4,
-        convergence_iterations=[50, 50, 50, 50],
-        convergence_tolerance=1.0e-7,
-        spline_param=200,
-        verbose=False,
-    )
-    raise SystemExit(exit_code_from_summary(processing_summary))

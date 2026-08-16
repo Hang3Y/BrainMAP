@@ -13,11 +13,6 @@ from brainmap.data.modality import ModalityMapper
 
 REQUIRED_SAMPLE_KEYS = ("__key__", "npy", "cls", "json")
 
-"""
-定义单个 BrainMAP 样本的标准数据格式。负责解码 npy 图像、模态文本和 JSON 元数据，
-校验必要字段及模态一致性，并将图像统一为 float32 的 [1, H, W] 格式。
-"""
-
 def normalize_webdataset_sample(
     sample: Mapping[str, Any],
     modality_mapper: ModalityMapper | None = None,
@@ -86,24 +81,3 @@ def _ensure_channel_first_2d(image: np.ndarray) -> np.ndarray:
         return image
     raise ValueError(f"Expected 2D slice or 1xHxW image, got shape={image.shape}")
 
-
-if __name__ == "__main__":
-    dummy = {
-        "__key__": "dummy__case_t1n__z0000",
-        "npy": np.zeros((224, 224), dtype=np.float16),
-        "cls": "t1n",
-        "json": {
-            "dataset": "dummy",
-            "relative_path": "case_t1n.nii.gz",
-            "volume_stem": "case_t1n",
-            "modality": "t1n",
-            "z_index": 0,
-            "volume_shape": [224, 224, 160],
-            "dtype": "float16",
-        },
-    }
-    normalized = normalize_webdataset_sample(dummy, modality_mapper=ModalityMapper.default())
-    assert normalized["image"].shape == (1, 224, 224)
-    assert normalized["image"].dtype == np.float32
-    assert normalized["modality_index"] == 0
-    print("batch_contract sanity check passed")

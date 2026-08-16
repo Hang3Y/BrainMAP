@@ -176,35 +176,3 @@ def run_skull_stripping(
     return summary
 
 
-if __name__ == "__main__":
-    script_dir = Path(__file__).resolve().parent
-    dataset_inputs = {
-        "1001_abideii": "abide_fm_ready",
-        "1005_atlasr2": "atlas_fm_ready",
-        "1014_ixi": "ixi_fm_ready",
-        "1020_wmh": "wmh_fm_ready",
-        "1030_nigerian_clinical_mri": "curated_fm_ready",
-    }
-
-    active_dataset = "1001_abideii"
-    # active_dataset = "1005_atlasr2"
-    # active_dataset = "1014_ixi"
-    # active_dataset = "1020_wmh"
-    # active_dataset = "1030_nigerian_clinical_mri"
-    selected_input_dir = script_dir / active_dataset / dataset_inputs[active_dataset]
-
-    run_skull_stripping(
-        input_dir=selected_input_dir,
-        device="cuda",
-        use_tta=True,
-    )
-
-
-"""
-20260622 第一次测试demo
-非常厉害 去除颅骨简直是完美的 
-
-接下来是转移到正式颅骨去除数据集中执行。
-
-
-"""

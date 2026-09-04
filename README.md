@@ -1,22 +1,44 @@
-# BrainMAP: Modality-aware Anatomy-guided Predictive Representation Learning for Brain MRI
+# BrainMAP: MRI-Aware Predictive Representation Learning for a Domain-Specific Brain Foundation Model
 
-BrainMAP is a domain-specific foundation representation-learning framework for brain MRI. It incorporates anatomy-frequency-guided masked latent prediction, modality supervision, and acquisition-perturbation consistency within a student-teacher framework.
+BrainMAP is an MRI-aware predictive representation learning framework for developing a domain-specific brain foundation model.
 
 ## Abstract
 
-Magnetic resonance imaging (MRI) plays a central role in the diagnosis and follow-up of brain tumors, neurodegenerative diseases, stroke, and other neurological disorders. Foundation models offer a new representation-learning paradigm for brain MRI analysis across multiple tasks. However, existing approaches often adopt generic self-supervised objectives and overlook the explicit modeling of heterogeneous anatomical structures, sequence-dependent tissue contrast, and acquisition-related variation in brain MRI. We propose BrainMAP (Modality-aware Anatomy-guided Predictive Representation Learning), a domain-specific foundation representation-learning framework for brain MRI. Built on masked latent prediction, BrainMAP integrates anatomy-frequency-guided masking, modality supervision, and acquisition-perturbation consistency within a unified student-teacher framework. This design prioritizes information-rich structural regions, preserves tissue contrast across MRI sequences, and reduces the influence of nonpathological acquisition variation. We pretrain BrainMAP on a large-scale brain MRI pool assembled from 14 public datasets and evaluate its transferability in MRI modality classification, molecular-status classification, cognitive classification, tumor segmentation, and overall survival prediction.
+Magnetic resonance imaging (MRI) plays a central role in the diagnosis and follow-up of brain tumors, neurodegenerative diseases, stroke, and other neurological disorders. Foundation models offer a promising representation-learning paradigm for brain MRI analysis across diverse tasks. However, existing approaches often adapt generic self-supervised objectives without explicitly modeling sequence-dependent tissue contrast, heterogeneous anatomical structures, and nonpathological acquisition perturbations in brain MRI. We propose BrainMAP, an MRI-aware predictive representation learning framework for developing a domain-specific brain foundation model. Built on masked latent prediction, BrainMAP incorporates modality-supervised representation learning, anatomy-guided masked latent prediction, and perturbation consistency learning within a unified student-teacher framework. These objectives introduce MRI-specific modality, structural, and acquisition characteristics into predictive representation learning. BrainMAP is pretrained on a large-scale brain MRI pool assembled from 14 public datasets, yielding 2,815,620 axial 2D pretraining samples from processed 3D scans, and is evaluated across multiple downstream tasks. Experimental results demonstrate effective transfer of BrainMAP representations, with further evaluation through linear probing, limited-label adaptation, and artifact perturbation experiments. The code will be publicly available at: https://github.com/Hang3Y/BrainMAP.
 
 ## Motivation
 
-![BrainMAP motivation](assets/fig1.png)
+![BrainMAP motivation](assets/Fig1.png)
 
-**Figure 1.** Generic self-supervised pretraining versus BrainMAP for brain MRI. Both learn representations from large-scale brain MRI data and transfer them to disease classification, survival prediction, cognitive classification, and lesion segmentation. Generic approaches use general-purpose objectives without explicitly modeling brain MRI properties. BrainMAP incorporates heterogeneous anatomy, acquisition-related appearance variation, and sequence-dependent tissue contrast into pretraining.
+**Figure 1.** Generic self-supervised pretraining versus BrainMAP for brain MRI. Generic objectives overlook MRI-specific properties, whereas BrainMAP explicitly models modality-dependent tissue contrast, heterogeneous anatomy, and acquisition-related appearance variation.
 
 ## Framework
 
-![BrainMAP framework](assets/fig2.png)
+![BrainMAP framework](assets/Fig2.png)
 
-**Figure 2.** BrainMAP domain-specific pretraining framework. On the left, three views are constructed from the same brain MRI: an anatomy-frequency-guided masked view based on brain-region intensity, tissue boundaries, local variance, and Fourier response, a sequence-labeled clean view, and a perturbed artifact view. In the center, the online student encodes all three views, whereas the EMA teacher encodes only the clean view and provides patch-level targets and a global reference representation. On the right, structure-weighted latent prediction, sequence classification, and clean-artifact representation consistency jointly optimize the student network. Teacher parameters are updated as an EMA of student parameters.
+**Figure 2.** Overview of BrainMAP. The framework includes MRI-specific view construction, a shared student-teacher representation framework, and MRI-aware predictive learning objectives. A masked view, a modality-labeled clean view, and an acquisition-perturbed view are constructed from the same MRI. The student encodes all three views, whereas the EMA teacher processes only the clean view to provide patch targets and a global reference. Structure-weighted masked latent prediction, modality classification, and perturbation consistency jointly optimize the student, while the teacher is updated by exponential moving average.
+
+## Pretraining Data
+
+BrainMAP was pretrained on a large-scale brain MRI pool assembled from 14 public datasets. The table below summarizes the retained MRI scan counts after dataset-specific processing, available MRI sequences, and the applied skull-stripping and N4 bias-correction procedures. Dataset names link to their official data sources. A dash indicates that a sequence was unavailable or that the corresponding processing step was not applied.
+
+| Dataset | T1WI | T1CE | T2WI | FLAIR | Total volumes | Skull stripping | N4 correction |
+|---|---:|---:|---:|---:|---:|:---:|:---:|
+| [ABIDE](https://fcon_1000.projects.nitrc.org/indi/abide/abide_II.html) | 1,113 | - | - | 81 | 1,194 | Yes | Yes |
+| [BraTS](https://www.synapse.org/#!Synapse:syn51156910/wiki/622351) | 1,470 | 1,470 | 1,470 | 1,470 | 5,880 | - | - |
+| [ATLAS](https://atlas.grand-challenge.org/ATLAS/) | 955 | - | - | - | 955 | Yes | Yes |
+| [ISLES](https://isles22.grand-challenge.org/home/) | - | - | - | 250 | 250 | - | Yes |
+| [Medical Segmentation Decathlon](http://medicaldecathlon.com/) | 750 | 750 | 750 | 750 | 3,000 | - | - |
+| [IXI](https://brain-development.org/ixi-dataset/) | 581 | - | 578 | - | 1,159 | Yes | Yes |
+| [Learn2Reg](https://learn2reg.grand-challenge.org/Datasets/) | 453 | - | - | - | 453 | - | - |
+| [BrainMetShare](https://stanfordaimi.azurewebsites.net/datasets/f1253510-6ab3-4723-97e7-37d2af1ee898) | 156 | 312 | - | 156 | 624 | - | - |
+| [LUMIERE](https://springernature.figshare.com/collections/The_LUMIERE_Dataset_Longitudinal_Glioblastoma_MRI_with_Expert_RANO_Evaluation/5904905) | 400 | 400 | 400 | 400 | 1,600 | - | - |
+| [WMH](https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/AECRSD) | 340 | - | - | 170 | 510 | Yes | Yes |
+| [UCSD-PTGBM](https://www.cancerimagingarchive.net/collection/ucsd-ptgbm/) | 243 | 243 | 230 | 243 | 959 | - | - |
+| [UPENN-GBM](https://www.cancerimagingarchive.net/collection/upenn-gbm/) | 671 | 671 | 671 | 671 | 2,684 | - | - |
+| [UCSF-PDGM](https://www.cancerimagingarchive.net/collection/ucsf-pdgm/) | 501 | 501 | 501 | 501 | 2,004 | - | - |
+| [ReMIND](https://www.cancerimagingarchive.net/collection/remind/) | 24 | 166 | 243 | 90 | 523 | - | Yes |
+| **Total** | **7,657** | **4,513** | **4,843** | **4,782** | **21,795** | - | - |
 
 ## Repository Status
 
@@ -27,6 +49,7 @@ This repository currently provides the public method implementation and data-pre
 - WebDataset data contract and modality mapping.
 - Brain MRI preprocessing and WebDataset packaging utilities.
 - Reference configuration for BrainMAP pretraining.
+- Pretraining dataset inventory and dataset-specific processing summary.
 
 Additional materials will be released according to the progress of the paper.
 

@@ -8,13 +8,13 @@ Magnetic resonance imaging (MRI) plays a central role in the diagnosis and follo
 
 ## Motivation
 
-![BrainMAP motivation](assets/fig1.png)
+![BrainMAP motivation](assets/fig1_v2.png)
 
 **Figure 1.** Generic self-supervised pretraining versus BrainMAP for brain MRI. Generic objectives overlook MRI-specific properties, whereas BrainMAP explicitly models modality-dependent tissue contrast, heterogeneous anatomy, and acquisition-related appearance variation.
 
 ## Framework
 
-![BrainMAP framework](assets/fig2.png)
+![BrainMAP framework](assets/fig2_v2.png)
 
 **Figure 2.** Overview of BrainMAP. The framework includes MRI-specific view construction, a shared student-teacher representation framework, and MRI-aware predictive learning objectives. A masked view, a modality-labeled clean view, and an acquisition-perturbed view are constructed from the same MRI. The student encodes all three views, whereas the EMA teacher processes only the clean view to provide patch targets and a global reference. Structure-weighted masked latent prediction, modality classification, and perturbation consistency jointly optimize the student, while the teacher is updated by exponential moving average.
 
